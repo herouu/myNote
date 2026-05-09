@@ -1,21 +1,16 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Home from '../views/Home.vue';
+import NoteList from '../views/NoteList.vue';
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
+    name: 'NoteList',
+    component: NoteList,
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/About.vue'),
-  },
-  {
-    path: '/roughness',
-    name: 'RoughnessDemo',
-    component: () => import('../views/RoughnessDemo.vue'),
+    path: '/note/:id',
+    name: 'NoteEdit',
+    component: () => import('../views/NoteEdit.vue'),
   },
 ];
 

@@ -3,28 +3,76 @@ import { ref, computed } from 'vue';
 
 export const useAppStore = defineStore('app', () => {
   // State
-  const title = ref('Capacitor + Vue 3');
-  const photoCount = ref(0);
-
+  const title = ref('我的便签');
+  
+  // 便签数据
+  const notes = ref([]);
+  
   // Getters
-  const greeting = computed(() => {
-    return `Welcome to ${title.value}!`;
+  const noteCount = computed(() => notes.value.length);
+  const recentNotes = computed(() => {
+    return notes.value
+      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+      .slice(0, 5);
   });
 
   // Actions
-  function incrementPhotoCount() {
-    photoCount.value++;
+  function addNote(note) {
+    const newNote = {
+      id: Date.now().toString(),
+      title: note.title || '新建便签',
+      content: note.content || '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      color: note.color || '#fff9c4',
+    };
+    notes.value.push(newNote);
+    saveNotes();
+    return newNote;
   }
 
-  function updateTitle(newTitle) {
-    title.value = newTitle;
+  function updateNote(id, updates) {
+    const index = notes.value.findIndex(n => n.id === id);
+    if (index !== -1) {
+      notes.value[index] = {
+        ...notes.value[index],
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+      saveNotes();
+    }
+  }
+
+  function deleteNote(id) {
+    notes.value = notes.value.filter(n => n.id !== id);
+    saveNotes();
+  }
+
+  function getNoteById(id) {
+    return notes.value.find(n => n.id === id);
+  }
+
+  function saveNotes() {
+    localStorage.setItem('notes', JSON.stringify(notes.value));
+  }
+
+  function loadNotes() {
+    const stored = localStorage.getItem('notes');
+    if (stored) {
+      notes.value = JSON.parse(stored);
+    }
   }
 
   return {
     title,
-    photoCount,
-    greeting,
-    incrementPhotoCount,
-    updateTitle,
+    notes,
+    noteCount,
+    recentNotes,
+    addNote,
+    updateNote,
+    deleteNote,
+    getNoteById,
+    saveNotes,
+    loadNotes,
   };
 });
