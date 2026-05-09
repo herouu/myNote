@@ -1,5 +1,5 @@
 <template>
-  <div class="note-list">
+  <div class="note-list" @contextmenu.prevent="onContextMenu">
     <!-- 顶部标题栏 -->
     <header class="list-header">
       <h1 class="list-title">我的便签</h1>
@@ -29,15 +29,15 @@
           v-for="note in filteredNotes"
           :key="note.id"
           class="note-card"
+          :data-note-id="note.id"
           :class="{ 'show-actions': activeNoteId === note.id }"
           @click="handleCardClick(note.id)"
-          @touchstart="onTouchStart(note.id)"
-          @touchend="onTouchEnd(note.id)"
+          @touchstart="onTouchStart($event, note.id)"
+          @touchend="onTouchEnd"
           @touchmove="onTouchMove"
           @mousedown="onMouseDown(note.id)"
           @mouseup="onMouseUp"
           @mouseleave="onMouseUp"
-          @contextmenu.prevent="onLongPress(note.id)"
           hoverable
         >
           <div class="card-body">
@@ -45,14 +45,13 @@
             <p class="note-preview" v-if="note.content" v-html="renderPreview(note.content)"></p>
             <p class="note-preview empty" v-else>点击编辑内容...</p>
           </div>
-          <r-divider />
           <div class="card-footer">
             <span class="note-date">{{ formatDate(note.updatedAt) }}</span>
           </div>
           <!-- 长按显示的删除按钮 -->
           <transition name="slide">
-            <div v-if="activeNoteId === note.id" class="card-actions">
-              <r-button type="error" size="small" @click.stop="confirmDelete(note)">
+            <div v-if="activeNoteId === note.id" class="card-actions" @click.stop="handleActionClick($event, note)">
+              <r-button type="error" size="small">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14">
                   <polyline points="3 6 5 6 21 6" />
                   <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
@@ -115,10 +114,6 @@ const handleCardClick = (id) => {
     return;
   }
   // 如果当前有激活的删除按钮，先关闭
-  if (activeNoteId.value === id) {
-    activeNoteId.value = null;
-    return;
-  }
   if (activeNoteId.value) {
     activeNoteId.value = null;
     return;
@@ -127,7 +122,9 @@ const handleCardClick = (id) => {
 };
 
 // 触摸长按（移动端）
-const onTouchStart = (id) => {
+const onTouchStart = (e, id) => {
+  // 如果点击的是删除按钮区域，不处理长按
+  if (e.target.closest('.card-actions')) return;
   touchMoved = false;
   isLongPress = false;
   clearTimeout(longPressTimer);
@@ -142,7 +139,7 @@ const onTouchStart = (id) => {
   }, 600);
 };
 
-const onTouchEnd = (id) => {
+const onTouchEnd = () => {
   clearTimeout(longPressTimer);
 };
 
@@ -171,11 +168,34 @@ const onLongPress = (id) => {
   activeNoteId.value = id;
 };
 
+// 全局右键菜单拦截
+const onContextMenu = (e) => {
+  // 如果右键点击的是卡片，触发长按逻辑
+  const card = e.target.closest('.note-card');
+  if (card) {
+    // 找到对应 note 的 id — 通过遍历 v-for
+    const noteId = filteredNotes.value.find(n => {
+      return card.getAttribute('data-note-id') === String(n.id);
+    })?.id;
+    if (noteId) {
+      onLongPress(noteId);
+    }
+  }
+};
+
 const confirmDelete = (note) => {
-  if (confirm(`确定要删除"${note.title}"吗？`)) {
+  isLongPress = false;
+  if (window.confirm(`确定要删除"${note.title || '新建便签'}"吗？`)) {
     store.deleteNote(note.id);
     activeNoteId.value = null;
   }
+};
+
+// 删除按钮点击处理
+const handleActionClick = (e, note) => {
+  e.stopPropagation();
+  e.preventDefault();
+  confirmDelete(note);
 };
 
 const formatDate = (dateString) => {
@@ -270,6 +290,12 @@ const renderPreview = (content) => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.notes-container > :first-child {
+  margin-top: 10px;
 }
 
 /* 便签卡片 */
@@ -277,6 +303,10 @@ const renderPreview = (content) => {
   cursor: pointer;
   position: relative;
   transition: transform 0.2s;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 .note-card.show-actions {

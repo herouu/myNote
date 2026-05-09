@@ -95,7 +95,6 @@
 
     <!-- 底部操作栏 -->
     <footer class="edit-footer">
-      <r-divider />
       <div class="footer-row">
         <!-- 编辑/预览切换 -->
         <div class="mode-toggle">
@@ -109,19 +108,6 @@
             :class="{ active: mode === 'preview' }"
             @click="mode = 'preview'"
           >预览</button>
-        </div>
-        <!-- 颜色选择器 -->
-        <div class="color-bar">
-          <div
-            v-for="color in colorOptions"
-            :key="color.value"
-            class="color-dot"
-            :class="{ active: note.color === color.value }"
-            :style="{ backgroundColor: color.value }"
-            @click="selectColor(color.value)"
-          >
-            <span v-if="note.color === color.value" class="check">✓</span>
-          </div>
         </div>
       </div>
     </footer>
