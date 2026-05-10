@@ -1,16 +1,24 @@
 {
   "name": "capacitor-app",
   "version": "1.0.0",
-  "description": "An Amazing Capacitor App",
+  "description": "An Amazing Capacitor App with Cloudflare Workers & D1",
   "type": "module",
   "keywords": [
     "capacitor",
-    "mobile"
+    "mobile",
+    "cloudflare",
+    "workers",
+    "d1"
   ],
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:worker": "wrangler dev",
+    "deploy:worker": "wrangler deploy",
+    "d1:init": "wrangler d1 create mynote-db",
+    "d1:execute": "wrangler d1 execute mynote-db --file=./database/schema.sql",
+    "d1:seed": "wrangler d1 execute mynote-db --file=./database/seed.sql"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.3",
@@ -25,8 +33,11 @@
   },
   "devDependencies": {
     "@capacitor/cli": "latest",
+    "@cloudflare/workers-types": "^4.20241106.0",
     "@vitejs/plugin-vue": "^5.2.3",
-    "vite": "^6.0.0"
+    "itty-router": "^5.0.17",
+    "vite": "^6.0.0",
+    "wrangler": "^4.90.0"
   },
   "author": "",
   "license": "ISC"
