@@ -26,3 +26,20 @@ database_id = "c96e2e7a-2dc2-434c-91a6-fd9b98f85cb3"
 [dev]
 port = 8787
 local_protocol = "http"
+
+
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = true
+persist = true
+head_sampling_rate = 1
