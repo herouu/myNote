@@ -2,9 +2,9 @@ name = "mynote-api"
 main = "src/worker/index.ts"
 compatibility_date = "2024-01-01"
 
-# D1 数据库绑定
+# 开发环境 D1 数据库
 [[d1_databases]]
-binding = "DB"  # Workers 中通过 env.DB 访问
+binding = "DB"
 database_name = "local-mynote-db"
 database_id = "a79ea03c-834e-4a9a-b3a9-f3e17df58962"
 
@@ -13,10 +13,15 @@ database_id = "a79ea03c-834e-4a9a-b3a9-f3e17df58962"
 # binding = "CACHE"
 # id = "YOUR_KV_ID"
 
-# 开发环境配置
+# 生产环境
 [env.production]
 name = "mynote-api"
-route = "api.yourdomain.com/*"  # 生产环境路由
+
+# 生产环境 D1 数据库
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "mynote-db"
+database_id = "c96e2e7a-2dc2-434c-91a6-fd9b98f85cb3"
 
 [dev]
 port = 8787
