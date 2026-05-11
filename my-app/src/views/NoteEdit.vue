@@ -9,7 +9,7 @@
         返回
       </r-button>
       <div class="header-info">
-        <span class="edit-date">{{ formatDate(note.updatedAt) }}</span>
+        <span class="edit-date">{{ formatDate(note.updated_at) }}</span>
         <span class="edit-count">{{ charCount }} 字</span>
       </div>
       <r-button v-if="!isNew" @click="confirmDelete" type="error" size="small">
@@ -136,9 +136,8 @@ const note = ref({
   id: '',
   title: '',
   content: '',
-  color: '#fffef7',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
 });
 
 const colorOptions = [
@@ -226,35 +225,48 @@ const insertMd = (type) => {
   });
 };
 
-const saveNote = () => {
-  if (isNew.value) {
-    const newNote = store.addNote({
-      title: note.value.title,
-      content: note.value.content,
-      color: note.value.color,
-    });
-    isNew.value = false;
-    router.replace(`/note/${newNote.id}`);
-  } else {
-    store.updateNote(note.value.id, {
-      title: note.value.title,
-      content: note.value.content,
-      color: note.value.color,
-    });
+const saveNote = async () => {
+  // 如果内容为空，不保存
+  if (!note.value.content && !note.value.title) {
+    return;
   }
-  hasChanges = false;
+
+  try {
+    if (isNew.value) {
+      const result = await store.addNote({
+        title: note.value.title || '无标题',
+        content: note.value.content,
+        color: note.value.color,
+      });
+      if (result) {
+        note.value.id = result.id;
+        note.value.created_at = result.created_at;
+        note.value.updated_at = result.updated_at;
+        isNew.value = false;
+        router.replace(`/note/${result.id}`);
+      }
+    } else {
+      await store.updateNote(note.value.id, {
+        title: note.value.title || '无标题',
+        content: note.value.content,
+      });
+    }
+    hasChanges = false;
+  } catch (e) {
+    console.error('保存失败:', e);
+  }
 };
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
   if (confirm('确定要删除这条便签吗？')) {
-    store.deleteNote(note.value.id);
+    await store.deleteNote(note.value.id);
     router.push('/');
   }
 };
 
-const goBack = () => {
+const goBack = async () => {
   if (hasChanges) {
-    saveNote();
+    await saveNote();
   }
   router.push('/');
 };

@@ -5,32 +5,12 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
 
-// 类型定义
-export interface Note {
-  id: string;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
 class NotesApi {
-  private baseUrl: string;
-
-  constructor(baseUrl: string = API_BASE_URL) {
+  constructor(baseUrl = API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
+  async request(endpoint, options = {}) {
     try {
       const url = `${this.baseUrl}${endpoint}`;
       const response = await fetch(url, {
@@ -43,7 +23,7 @@ class NotesApi {
 
       const data = await response.json();
       return data;
-    } catch (error: any) {
+    } catch (error) {
       console.error('API Error:', error);
       return {
         success: false,
@@ -53,46 +33,46 @@ class NotesApi {
   }
 
   // 获取所有笔记
-  async list(): Promise<ApiResponse<Note[]>> {
-    return this.request<Note[]>('/api/notes');
+  async list() {
+    return this.request('/api/notes');
   }
 
   // 获取单个笔记
-  async get(id: string): Promise<ApiResponse<Note>> {
-    return this.request<Note>(`/api/notes/${id}`);
+  async get(id) {
+    return this.request(`/api/notes/${id}`);
   }
 
   // 创建笔记
-  async create(data: { title: string; content: string }): Promise<ApiResponse<Note>> {
-    return this.request<Note>('/api/notes', {
+  async create(data) {
+    return this.request('/api/notes', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   // 更新笔记
-  async update(id: string, data: { title?: string; content?: string }): Promise<ApiResponse<Note>> {
-    return this.request<Note>(`/api/notes/${id}`, {
+  async update(id, data) {
+    return this.request(`/api/notes/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   }
 
   // 删除笔记
-  async delete(id: string): Promise<ApiResponse<{ deleted: boolean }>> {
-    return this.request<{ deleted: boolean }>(`/api/notes/${id}`, {
+  async delete(id) {
+    return this.request(`/api/notes/${id}`, {
       method: 'DELETE',
     });
   }
 
   // 搜索笔记
-  async search(query: string): Promise<ApiResponse<Note[]>> {
-    return this.request<Note[]>(`/api/notes?q=${encodeURIComponent(query)}`);
+  async search(query) {
+    return this.request(`/api/notes?q=${encodeURIComponent(query)}`);
   }
 
   // 健康检查
-  async health(): Promise<ApiResponse<{ status: string }>> {
-    return this.request<{ status: string }>('/health');
+  async health() {
+    return this.request('/health');
   }
 }
 

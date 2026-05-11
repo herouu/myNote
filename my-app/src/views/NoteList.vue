@@ -46,7 +46,7 @@
             <p class="note-preview empty" v-else>点击编辑内容...</p>
           </div>
           <div class="card-footer">
-            <span class="note-date">{{ formatDate(note.updatedAt) }}</span>
+            <span class="note-date">{{ formatDate(note.updated_at) }}</span>
           </div>
           <!-- 长按显示的删除按钮 -->
           <transition name="slide">
@@ -95,7 +95,7 @@ onUnmounted(() => {
 
 const sortedNotes = computed(() => {
   return [...store.notes].sort(
-    (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+    (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
   );
 });
 
