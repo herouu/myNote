@@ -1,6 +1,167 @@
-# TODO List
+# myNote 便签应用
 
-## 便签应用开发计划
+手绘风格的跨平台便签应用，基于 Vue 3 + Capacitor + Cloudflare Workers。
+
+## 项目结构
+
+```
+myNote/
+├── my-app/           # 前端应用 (Vue 3 + Vite + Capacitor)
+├── my-app-worker/    # 后端 API (Cloudflare Workers + Hono + D1)
+└── package.json      # 根目录脚本（同时启动前后端）
+```
+
+## 快速开始
+
+### 安装依赖
+
+```bash
+# 安装根目录依赖（concurrently）
+npm install
+
+# 或分别安装子项目依赖
+npm run install:all
+```
+
+### 开发模式
+
+**方式一：根目录一键启动（推荐）**
+```bash
+npm run dev
+```
+
+**方式二：分别启动**
+```bash
+# 终端 1：启动后端 Worker (端口 8787)
+cd my-app-worker
+npm run dev:worker
+
+# 终端 2：启动前端 (端口 5173)
+cd my-app
+npm run dev
+```
+
+### 生产环境
+
+```bash
+cd my-app
+
+# 构建生产版本
+npm run build
+
+# 同步到 Android
+npm run sync
+```
+
+### Android 打包
+
+```bash
+cd my-app/android
+./gradlew assembleRelease
+```
+
+APK 输出位置：`android/app/build/outputs/apk/release/app-release.apk`
+
+## 前端命令 (my-app/)
+
+| 命令 | 说明 |
+|------|------|
+| `npm run dev` | 开发模式启动 |
+| `npm start` | 生产模式启动 |
+| `npm run build` | 构建生产版本 |
+| `npm run preview` | 预览生产构建 |
+| `npm run sync` | 同步到 Android |
+
+## 后端命令 (my-app-worker/)
+
+| 命令 | 说明 |
+|------|------|
+| `npm run dev:worker` | 启动 Cloudflare Worker |
+| `npm run deploy` | 部署到生产环境 |
+
+### D1 数据库操作
+
+```bash
+# 本地数据库
+npm run d1:init:local    # 初始化本地数据库
+npm run d1:seed:local    # 填充测试数据
+
+# 远程数据库
+npm run d1:create:remote # 创建远程数据库
+npm run d1:init:remote   # 初始化远程数据库
+npm run d1:seed:remote   # 填充测试数据
+npm run d1:export        # 导出远程数据库
+```
+
+## 环境变量
+
+前端环境配置文件位于 `my-app/src/` 目录：
+
+| 文件 | 说明 |
+|------|------|
+| `.env.development` | 开发环境 (`http://localhost:8787`) |
+| `.env.production` | 生产环境 (`https://herouu.xx.kg`) |
+
+## 开发调试
+
+### 移动端真机调试（局域网）
+
+1. **查看本机局域网 IP**
+   ```bash
+   # Windows
+   ipconfig
+   
+   # macOS/Linux
+   ifconfig | grep inet
+   ```
+   通常是 `192.168.x.x` 格式。
+
+2. **配置前端 API 地址**
+   修改 `my-app/src/.env.development`：
+   ```env
+   VITE_API_URL=http://192.168.x.x:8787
+   ```
+
+3. **启动服务**
+   ```bash
+   # 终端 1：启动后端
+   cd my-app-worker
+   npm run dev:worker
+   
+   # 终端 2：启动前端（开发模式）
+   cd my-app
+   npm run dev
+   ```
+
+4. **配置 Android HTTP 权限**
+   如果使用 HTTP（Android 9+ 默认禁止），需要在 `android/app/src/main/res/xml/network_security_config.xml` 中添加：
+   ```xml
+   <domain-config cleartextTrafficPermitted="true">
+       <domain includeSubdomains="true">192.168.x.x</domain>
+   </domain-config>
+   ```
+
+5. **同步并运行**
+   ```bash
+   npm run build
+   npm run sync
+   ```
+   然后在 Android Studio 中 Run 应用。
+
+### vConsole 移动端日志
+
+开发模式下自动启用 vConsole，可查看 Console、Network 等调试信息。
+
+## 技术栈
+
+- **前端**: Vue 3 + Vite + Pinia + Vue Router + Roughness
+- **移动端**: Capacitor (Android/iOS)
+- **后端**: Cloudflare Workers + Hono + D1
+- **部署**: Cloudflare Pages/Workers
+
+---
+
+## TODO List
 
 ### 页面与交互
 - [x] 列表页 - 便签卡片展示、新建按钮
@@ -17,7 +178,7 @@
 - [ ] 便签拖拽排序
 
 ### 功能增强
-- [x] Pinia 状态管理 + localStorage 持久化
+- [x] Pinia 状态管理
 - [x] Markdown 编辑工具栏（标题、加粗、斜体、列表、代码块等）
 - [ ] 图片插入与预览
 - [ ] 语音输入
@@ -48,6 +209,7 @@
 ### 工程化
 - [x] Vue 3 + Vite 项目搭建
 - [x] Vue Router 路由管理
+- [x] 环境变量配置 (dev/production)
 - [ ] 单元测试（Vitest）
 - [ ] E2E 测试（Playwright）
 - [ ] ESLint + Prettier 代码规范
@@ -56,8 +218,8 @@
 - [ ] 性能监控
 
 ### 数据与同步
-- [x] localStorage 本地存储
-- [ ] 云端同步（CloudBase / Supabase）
+- [x] Cloudflare D1 数据库
+- [x] Cloudflare Workers API
 - [ ] 用户认证登录
 - [ ] 多设备数据同步
 - [ ] 数据导入/导出
