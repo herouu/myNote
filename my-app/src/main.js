@@ -10,6 +10,13 @@ import 'roughness/dist/style.css';
 // 导入 Capacitor 插件
 import { SplashScreen } from '@capacitor/splash-screen';
 
+// 引入 vConsole（仅在开发模式启用）
+if (import.meta.env.DEV) {
+  import('vconsole').then(({ default: VConsole }) => {
+    new VConsole();
+  });
+}
+
 // 创建 Vue 应用
 const app = createApp(App);
 
