@@ -13,7 +13,14 @@
 
     <!-- 便签列表 -->
     <div class="notes-scroll">
-      <div v-if="sortedNotes.length === 0" class="empty-state">
+      <!-- 加载中状态 -->
+      <div v-if="store.isLoading" class="loading-state">
+        <r-loading size="large" />
+        <r-text type="secondary" class="loading-text">加载中...</r-text>
+      </div>
+
+      <!-- 空状态 -->
+      <div v-else-if="sortedNotes.length === 0" class="empty-state">
         <svg class="empty-icon" viewBox="0 0 64 64" fill="none" stroke="#ccc" stroke-width="2">
           <rect x="12" y="8" width="40" height="48" rx="4" />
           <line x1="20" y1="22" x2="44" y2="22" />
@@ -24,6 +31,7 @@
         <p class="empty-hint">点击右上角 + 创建第一条便签</p>
       </div>
 
+      <!-- 便签列表 -->
       <div v-else class="notes-container">
         <r-card
           v-for="note in filteredNotes"
@@ -260,6 +268,18 @@ const renderPreview = (content) => {
   overflow-y: auto;
   padding: 12px 16px 40px;
   -webkit-overflow-scrolling: touch;
+}
+
+/* 加载状态 */
+.loading-state {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.loading-text {
+  color: #999;
+  font-size: 0.9em;
+  margin-top: 12px;
 }
 
 /* 空状态 */
