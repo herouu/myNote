@@ -10,6 +10,11 @@
     "dev:worker:prod": "npm run dev:prod --prefix my-app-worker",
     "dev:app": "npm run dev --prefix my-app",
     "dev:app:prod": "npm run dev:prod --prefix my-app",
+    "build": "npm run build --prefix my-app",
+    "build:prod": "npm run build:prod --prefix my-app",
+    "sync:android": "npm run sync --prefix my-app",
+    "sync:android:prod": "npm run build:prod --prefix my-app && npm run sync --prefix my-app",
+    "deploy": "npm run deploy --prefix my-app-worker",
     "install:all": "npm install --prefix my-app && npm install --prefix my-app-worker"
   },
   "devDependencies": {

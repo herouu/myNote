@@ -26,32 +26,30 @@ npm run install:all
 ### 开发模式
 
 **方式一：根目录一键启动（推荐）**
-```bash
-npm run dev
-```
+
+| 命令 | 说明 |
+|------|------|
+| `npm run dev` | 同时启动后端+前端（开发环境） |
+| `npm run dev:prod` | 同时启动后端+前端（生产环境预览） |
 
 **方式二：分别启动**
-```bash
-# 终端 1：启动后端 Worker (端口 8787)
-cd my-app-worker
-npm run dev:worker
 
-# 终端 2：启动前端 (端口 5173)
-cd my-app
-npm run dev
-```
+| 命令 | 说明 |
+|------|------|
+| `npm run dev:worker` | 只启动后端（开发环境） |
+| `npm run dev:worker:prod` | 只启动后端（生产环境） |
+| `npm run dev:app` | 只启动前端（开发环境） |
+| `npm run dev:app:prod` | 只启动前端（生产环境） |
 
-### 生产环境
+### 构建与打包
 
-```bash
-cd my-app
-
-# 构建生产版本
-npm run build
-
-# 同步到 Android
-npm run sync
-```
+| 命令 | 说明 |
+|------|------|
+| `npm run build` | 构建前端开发版本 |
+| `npm run build:prod` | 构建前端生产版本 |
+| `npm run sync:android` | 同步到 Android |
+| `npm run sync:android:prod` | 构建生产版本并同步到 Android |
+| `npm run deploy` | 发布后端到 Cloudflare Workers |
 
 ### Android 打包
 
@@ -66,9 +64,10 @@ APK 输出位置：`android/app/build/outputs/apk/release/app-release.apk`
 
 | 命令 | 说明 |
 |------|------|
-| `npm run dev` | 开发模式启动 |
-| `npm start` | 生产模式启动 |
-| `npm run build` | 构建生产版本 |
+| `npm run dev` | 开发模式启动（开发环境） |
+| `npm run dev:prod` | 开发模式启动（生产环境） |
+| `npm run build` | 构建开发版本 |
+| `npm run build:prod` | 构建生产版本 |
 | `npm run preview` | 预览生产构建 |
 | `npm run sync` | 同步到 Android |
 
@@ -76,7 +75,7 @@ APK 输出位置：`android/app/build/outputs/apk/release/app-release.apk`
 
 | 命令 | 说明 |
 |------|------|
-| `npm run dev:worker` | 启动 Cloudflare Worker |
+| `npm run dev` | 启动 Cloudflare Worker |
 | `npm run deploy` | 部署到生产环境 |
 
 ### D1 数据库操作
@@ -124,12 +123,6 @@ npm run d1:export        # 导出远程数据库
 
 3. **启动服务**
    ```bash
-   # 终端 1：启动后端
-   cd my-app-worker
-   npm run dev:worker
-   
-   # 终端 2：启动前端（开发模式）
-   cd my-app
    npm run dev
    ```
 
@@ -143,8 +136,7 @@ npm run d1:export        # 导出远程数据库
 
 5. **同步并运行**
    ```bash
-   npm run build
-   npm run sync
+   npm run sync:android
    ```
    然后在 Android Studio 中 Run 应用。
 
