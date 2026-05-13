@@ -34,7 +34,7 @@ export const NoteListSchema = z.array(NoteSchema);
 
 export const CreateNoteSchema = z.object({
   title: z.string().min(1, '标题不能为空'),
-  content: z.string().min(1, '内容不能为空'),
+  content: z.string(),
 });
 
 export const UpdateNoteSchema = z.object({

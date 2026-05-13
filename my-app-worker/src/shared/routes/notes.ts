@@ -16,7 +16,7 @@ const NoteSchema = z.object({
 
 const CreateNoteSchema = z.object({
   title: z.string().min(1).openapi({ example: 'New Note' }),
-  content: z.string().min(1).openapi({ example: 'Note content' }),
+  content: z.string().openapi({ example: 'Note content' }),
 });
 
 const UpdateNoteSchema = z.object({
