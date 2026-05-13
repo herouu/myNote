@@ -8,10 +8,12 @@
     "mobile"
   ],
   "scripts": {
-    "start": "vite",
-    "build": "vite build",
+    "start": "vite --mode development",
+    "dev": "vite --mode development",
+    "dev:prod": "vite --mode production",
+    "build": "vite build --mode development",
+    "build:prod": "vite build --mode production",
     "preview": "vite preview --mode production",
-    "dev": "vite",
     "sync": "npx cap sync android"
   },
   "dependencies": {

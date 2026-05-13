@@ -5,8 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -n worker,app -c blue,green \"npm run dev --prefix my-app-worker\" \"npm run dev --prefix my-app\"",
+    "dev:prod": "concurrently -n worker,app -c blue,green \"npm run dev:prod --prefix my-app-worker\" \"npm run dev:prod --prefix my-app\"",
     "dev:worker": "npm run dev --prefix my-app-worker",
+    "dev:worker:prod": "npm run dev:prod --prefix my-app-worker",
     "dev:app": "npm run dev --prefix my-app",
+    "dev:app:prod": "npm run dev:prod --prefix my-app",
     "install:all": "npm install --prefix my-app && npm install --prefix my-app-worker"
   },
   "devDependencies": {
