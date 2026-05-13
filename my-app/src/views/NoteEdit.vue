@@ -2,113 +2,88 @@
   <div class="note-edit">
     <!-- 顶部工具栏 -->
     <header class="edit-header">
-      <r-button @click="goBack" type="text">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18">
+      <r-button @click="goBack" type="text" size="small" class="back-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14">
           <polyline points="15 18 9 12 15 6" />
         </svg>
-        返回
+        <span>返回</span>
       </r-button>
       <div class="header-info">
         <span class="edit-date">{{ formatDate(note.updated_at) }}</span>
         <span class="edit-count">{{ charCount }} 字</span>
       </div>
-      <r-button v-if="!isNew" @click="confirmDelete" type="error" size="small">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16">
-          <polyline points="3 6 5 6 21 6" />
-          <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
-        </svg>
-      </r-button>
+      <div class="header-actions">
+        <r-button @click="undo" type="text" :disabled="!canUndo" title="撤销" size="small">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
+          </svg>
+        </r-button>
+        <r-button v-if="!isNew" @click="confirmDelete" type="error" size="small">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+          </svg>
+        </r-button>
+      </div>
     </header>
 
-    <!-- Markdown 工具栏 -->
-    <div class="md-toolbar" v-if="mode === 'edit'">
-      <button class="tool-btn" @click="insertMd('heading')" title="标题">
-        <strong>H</strong>
-      </button>
-      <button class="tool-btn" @click="insertMd('bold')" title="加粗">
-        <strong>B</strong>
-      </button>
-      <button class="tool-btn" @click="insertMd('italic')" title="斜体">
-        <em>I</em>
-      </button>
-      <button class="tool-btn" @click="insertMd('strikethrough')" title="删除线">
-        <span style="text-decoration:line-through">S</span>
-      </button>
-      <span class="tool-sep"></span>
-      <button class="tool-btn" @click="insertMd('list')" title="列表">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
-          <circle cx="4" cy="6" r="1" fill="currentColor" /><circle cx="4" cy="12" r="1" fill="currentColor" /><circle cx="4" cy="18" r="1" fill="currentColor" />
-        </svg>
-      </button>
-      <button class="tool-btn" @click="insertMd('orderedList')" title="有序列表">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <line x1="10" y1="6" x2="21" y2="6" /><line x1="10" y1="12" x2="21" y2="12" /><line x1="10" y1="18" x2="21" y2="18" />
-          <text x="2" y="8" font-size="8" fill="currentColor" stroke="none">1</text><text x="2" y="14" font-size="8" fill="currentColor" stroke="none">2</text><text x="2" y="20" font-size="8" fill="currentColor" stroke="none">3</text>
-        </svg>
-      </button>
-      <button class="tool-btn" @click="insertMd('checklist')" title="待办">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <rect x="3" y="5" width="6" height="6" rx="1" /><line x1="14" y1="8" x2="21" y2="8" />
-          <rect x="3" y="14" width="6" height="6" rx="1" /><polyline points="5 17 6.5 18.5 9 15" /><line x1="14" y1="17" x2="21" y2="17" />
-        </svg>
-      </button>
-      <span class="tool-sep"></span>
-      <button class="tool-btn" @click="insertMd('code')" title="代码">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-        </svg>
-      </button>
-      <button class="tool-btn" @click="insertMd('quote')" title="引用">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z" />
-        </svg>
-      </button>
-      <button class="tool-btn" @click="insertMd('link')" title="链接">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
-          <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
-        </svg>
-      </button>
+    <!-- 标题输入区 -->
+    <div class="title-bar">
+      <!-- 标题编辑区 -->
+      <input
+        v-if="isTitleEditing"
+        ref="titleInputRef"
+        v-model="note.title"
+        class="title-input"
+        placeholder="请输入标题..."
+        @input="onTitleInput"
+        @blur="onTitleBlur"
+      />
+      <!-- 标题预览区 -->
+      <div v-else class="title-preview" @click="startTitleEditing">
+        <span v-if="note.title">{{ note.title }}</span>
+        <span v-else class="title-placeholder">请输入标题...</span>
+      </div>
     </div>
 
     <!-- 编辑/预览区域 -->
     <div class="edit-body">
       <r-card class="text-area-card">
-        <!-- 编辑模式 -->
-        <div v-if="mode === 'edit'" class="editor-wrap">
+        <!-- 编辑区 -->
+        <div class="edit-area" v-if="isEditing">
           <textarea
             ref="textareaRef"
             v-model="note.content"
-            class="md-textarea"
+            class="md-input"
             placeholder="支持 Markdown 语法输入..."
-            @input="markChanged"
+            @input="onContentInput"
+            @blur="onBlur"
           ></textarea>
         </div>
-        <!-- 预览模式 -->
-        <div v-else class="preview-wrap">
-          <div v-if="note.content" class="markdown-body" v-html="renderedContent"></div>
-          <div v-else class="preview-empty">暂无内容</div>
+        
+        <!-- 预览区 -->
+        <div class="preview-area" v-else @click="startEditing">
+          <div class="preview-body">
+            <div v-if="note.content" class="markdown-body" v-html="renderedContent"></div>
+            <div v-else class="preview-placeholder">点击开始编辑...</div>
+          </div>
         </div>
       </r-card>
     </div>
 
-    <!-- 底部操作栏 -->
+    <!-- 底部状态栏 -->
     <footer class="edit-footer">
       <div class="footer-row">
-        <!-- 编辑/预览切换 -->
-        <div class="mode-toggle">
-          <button
-            class="mode-btn"
-            :class="{ active: mode === 'edit' }"
-            @click="mode = 'edit'"
-          >编辑</button>
-          <button
-            class="mode-btn"
-            :class="{ active: mode === 'preview' }"
-            @click="mode = 'preview'"
-          >预览</button>
-        </div>
+        <span class="save-status" :class="{ saving: isSaving }">
+          <svg v-if="isSaving" class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="8" />
+          </svg>
+          <svg v-else-if="lastSaved" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          {{ saveStatusText }}
+        </span>
       </div>
     </footer>
   </div>
@@ -130,7 +105,25 @@ const store = useAppStore();
 const route = useRoute();
 const router = useRouter();
 const textareaRef = ref(null);
-const mode = ref('edit');
+const titleInputRef = ref(null);
+
+// 编辑状态
+const isEditing = ref(false);
+const isTitleEditing = ref(false);
+
+// 保存状态
+const isSaving = ref(false);
+const lastSaved = ref(false);
+const saveStatusText = computed(() => {
+  if (isSaving.value) return '保存中...';
+  if (lastSaved.value) return '已保存';
+  return '';
+});
+
+// 撤销功能 - 历史栈
+const historyStack = ref([]);
+const historyIndex = ref(-1);
+const maxHistorySize = 50;
 
 const note = ref({
   id: '',
@@ -140,17 +133,43 @@ const note = ref({
   updated_at: new Date().toISOString(),
 });
 
-const colorOptions = [
-  { value: '#fffef7', name: '米白' },
-  { value: '#fff9c4', name: '黄色' },
-  { value: '#c8e6c9', name: '绿色' },
-  { value: '#bbdefb', name: '蓝色' },
-  { value: '#ffccbc', name: '橙色' },
-  { value: '#e1bee7', name: '紫色' },
-];
-
 const isNew = ref(false);
 let hasChanges = false;
+let pendingSave = false;
+
+// 保存历史记录
+const saveHistory = () => {
+  const state = { title: note.value.title, content: note.value.content };
+  
+  // 如果当前不在最新位置，删除后面的历史
+  if (historyIndex.value < historyStack.value.length - 1) {
+    historyStack.value = historyStack.value.slice(0, historyIndex.value + 1);
+  }
+  
+  // 添加新历史
+  historyStack.value.push(state);
+  
+  // 限制历史记录数量
+  if (historyStack.value.length > maxHistorySize) {
+    historyStack.value.shift();
+  } else {
+    historyIndex.value++;
+  }
+};
+
+// 是否可以撤销
+const canUndo = computed(() => historyIndex.value > 0);
+
+// 撤销操作
+const undo = () => {
+  if (!canUndo.value) return;
+  
+  historyIndex.value--;
+  const state = historyStack.value[historyIndex.value];
+  note.value.title = state.title;
+  note.value.content = state.content;
+  hasChanges = true;
+};
 
 const charCount = computed(() => {
   return note.value.content ? note.value.content.length : 0;
@@ -176,53 +195,89 @@ onMounted(() => {
       router.push('/');
     }
   }
+  
+  // 初始化历史记录
+  saveHistory();
 });
 
-const markChanged = () => {
+// 标题输入处理
+const onTitleInput = () => {
   hasChanges = true;
+  lastSaved.value = false;
+  // 节流保存历史
+  clearTimeout(window._historyTimer);
+  window._historyTimer = setTimeout(() => {
+    saveHistory();
+  }, 500);
 };
 
-const selectColor = (color) => {
-  note.value.color = color;
-  markChanged();
-};
-
-// Markdown 快捷插入
-const insertMd = (type) => {
-  const textarea = textareaRef.value;
-  if (!textarea) return;
-
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const text = note.value.content || '';
-  const selected = text.substring(start, end);
-
-  const inserts = {
-    heading: { before: '## ', after: '', placeholder: '标题' },
-    bold: { before: '**', after: '**', placeholder: '加粗文字' },
-    italic: { before: '*', after: '*', placeholder: '斜体文字' },
-    strikethrough: { before: '~~', after: '~~', placeholder: '删除线文字' },
-    list: { before: '- ', after: '', placeholder: '列表项' },
-    orderedList: { before: '1. ', after: '', placeholder: '列表项' },
-    checklist: { before: '- [ ] ', after: '', placeholder: '待办项' },
-    code: { before: '```\n', after: '\n```', placeholder: '代码' },
-    quote: { before: '> ', after: '', placeholder: '引用文字' },
-    link: { before: '[', after: '](url)', placeholder: '链接文字' },
-  };
-
-  const item = inserts[type];
-  if (!item) return;
-
-  const insertText = selected || item.placeholder;
-  const newText = text.substring(0, start) + item.before + insertText + item.after + text.substring(end);
-  note.value.content = newText;
-  hasChanges = true;
-
+// 开始编辑标题
+const startTitleEditing = () => {
+  isTitleEditing.value = true;
   nextTick(() => {
-    textarea.focus();
-    const cursorPos = start + item.before.length + insertText.length + item.after.length;
-    textarea.setSelectionRange(start + item.before.length, selected ? cursorPos : start + item.before.length + insertText.length);
+    titleInputRef.value?.focus();
   });
+};
+
+// 标题失去光标保存并切换到预览
+const onTitleBlur = async () => {
+  isTitleEditing.value = false;
+  
+  if (!hasChanges) return;
+  if (pendingSave) return;
+  
+  pendingSave = true;
+  isSaving.value = true;
+  
+  try {
+    await saveNote();
+    lastSaved.value = true;
+  } finally {
+    pendingSave = false;
+    setTimeout(() => {
+      isSaving.value = false;
+    }, 500);
+  }
+};
+
+// 内容输入处理
+const onContentInput = () => {
+  hasChanges = true;
+  lastSaved.value = false;
+  // 节流保存历史
+  clearTimeout(window._historyTimer);
+  window._historyTimer = setTimeout(() => {
+    saveHistory();
+  }, 500);
+};
+
+// 开始编辑
+const startEditing = () => {
+  isEditing.value = true;
+  nextTick(() => {
+    textareaRef.value?.focus();
+  });
+};
+
+// 失去光标时保存并切换到预览
+const onBlur = async () => {
+  isEditing.value = false;
+  
+  if (!hasChanges) return;
+  if (pendingSave) return;
+  
+  pendingSave = true;
+  isSaving.value = true;
+  
+  try {
+    await saveNote();
+    lastSaved.value = true;
+  } finally {
+    pendingSave = false;
+    setTimeout(() => {
+      isSaving.value = false;
+    }, 500);
+  }
 };
 
 const saveNote = async () => {
@@ -292,7 +347,7 @@ const formatDate = (dateString) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
+  padding: 16px 16px;
   background-color: #e8e7e1;
   border-bottom: 1px solid #d8d7d1;
   flex-shrink: 0;
@@ -302,6 +357,34 @@ const formatDate = (dateString) => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 返回按钮样式 */
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+  font-size: 0.9em;
+  font-family: 'Yozai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  color: #333;
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+.back-btn svg {
+  flex-shrink: 0;
 }
 
 .edit-date {
@@ -317,68 +400,86 @@ const formatDate = (dateString) => {
   border-radius: 10px;
 }
 
-/* Markdown 工具栏 */
-.md-toolbar {
-  display: flex;
-  align-items: center;
-  padding: 6px 12px;
-  background-color: #e8e7e1;
-  border-bottom: 1px solid #d8d7d1;
-  gap: 4px;
+/* 标题输入区 */
+.title-bar {
+  padding: 12px 24px 8px;
+  background-color: #f0efe9;
   flex-shrink: 0;
-  overflow-x: auto;
 }
 
-.tool-btn {
-  width: 32px;
-  height: 32px;
+.title-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #888;
+  font-size: 0.75em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.title-header svg {
+  opacity: 0.7;
+}
+
+.title-input {
+  width: 100%;
   border: none;
   background: transparent;
-  cursor: pointer;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #555;
-  font-size: 0.9em;
-  flex-shrink: 0;
-  transition: background-color 0.15s;
+  font-size: 1.3em;
+  font-weight: 600;
+  color: #2c2c2c;
+  font-family: 'Yozai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  outline: none;
+  padding: 0;
 }
 
-.tool-btn:hover {
-  background-color: rgba(0, 0, 0, 0.06);
+.title-input::placeholder {
+  color: #bbb;
+  font-weight: 400;
 }
 
-.tool-btn:active {
-  background-color: rgba(0, 0, 0, 0.12);
+.title-preview {
+  width: 100%;
+  font-size: 1.3em;
+  font-weight: 600;
+  color: #2c2c2c;
+  font-family: 'Yozai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  cursor: text;
+  padding: 0;
 }
 
-.tool-sep {
-  width: 1px;
-  height: 20px;
-  background-color: #d0cfca;
-  margin: 0 4px;
-  flex-shrink: 0;
+.title-preview:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+}
+
+.title-placeholder {
+  color: #bbb;
+  font-weight: 400;
 }
 
 /* 编辑区域 */
 .edit-body {
   flex: 1;
-  padding: 16px;
   overflow-y: auto;
 }
 
 .text-area-card {
-  min-height: calc(100vh - 260px);
+  min-height: calc(100vh - 240px);
+  padding: 0 24px;
 }
 
-.editor-wrap {
-  min-height: calc(100vh - 260px);
+/* 编辑区 */
+.edit-area {
+  height: 100%;
+  min-height: calc(100vh - 280px);
 }
 
-.md-textarea {
+.md-input {
   width: 100%;
-  min-height: calc(100vh - 260px);
+  height: 100%;
+  min-height: calc(100vh - 280px);
   border: none;
   background: transparent;
   font-size: 1em;
@@ -386,35 +487,55 @@ const formatDate = (dateString) => {
   color: #2c2c2c;
   outline: none;
   resize: none;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  padding: 0;
+  font-family: 'Yozai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  padding: 24px;
   box-sizing: border-box;
 }
 
-.md-textarea::placeholder {
+.md-input::placeholder {
   color: #c0bfb8;
   font-family: inherit;
 }
 
-/* 预览模式 */
-.preview-wrap {
-  min-height: calc(100vh - 260px);
-  padding: 4px 0;
+/* 预览区 */
+.preview-area {
+  height: 100%;
+  min-height: calc(100vh - 280px);
+  cursor: text;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.preview-body {
+  min-height: calc(100vh - 280px);
+}
+
+.preview-placeholder {
+  color: #bbb;
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0;
 }
 
 .preview-empty {
   color: #bbb;
   font-style: italic;
   text-align: center;
-  padding: 60px 0;
+  padding: 20px 0;
 }
 
 /* Markdown 渲染样式 */
 .markdown-body {
-  font-size: 0.95em;
+  font-size: 1em;
   line-height: 1.8;
   color: #2c2c2c;
   word-wrap: break-word;
+  font-family: 'Yozai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin-top: 0;
+}
+
+.markdown-body :deep(*:first-child) {
+  margin-top: 0;
 }
 
 .markdown-body :deep(h1) {
@@ -554,98 +675,42 @@ const formatDate = (dateString) => {
 .footer-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
 }
 
-/* 编辑/预览切换 */
-.mode-toggle {
-  display: flex;
-  background-color: rgba(0, 0, 0, 0.06);
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.mode-btn {
-  padding: 6px 16px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.82em;
-  color: #888;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-
-.mode-btn.active {
-  background-color: #fff;
-  color: #2c2c2c;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* 颜色选择器 */
-.color-bar {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.color-dot {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
+/* 保存状态 */
+.save-status {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 6px;
+  font-size: 0.8em;
+  color: #888;
+  transition: color 0.2s;
 }
 
-.color-dot:active {
-  transform: scale(0.9);
+.save-status.saving {
+  color: #4a90d9;
 }
 
-.color-dot.active {
-  border-color: #555;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-  transform: scale(1.1);
+.spin {
+  animation: spin 1s linear infinite;
 }
 
-.color-dot .check {
-  font-size: 0.7em;
-  color: #555;
-  font-weight: bold;
-}
-
-.color-dot[style*="rgb(255, 255, 247)"],
-.color-dot[style*="#fffef7"],
-.color-dot[style*="rgb(255, 255, 255)"],
-.color-dot[style*="#ffffff"] {
-  border-color: rgba(0, 0, 0, 0.18);
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
-  .edit-body {
+  .md-input,
+  .preview-area {
     padding: 12px;
   }
-
-  .text-area-card,
-  .editor-wrap,
-  .md-textarea,
-  .preview-wrap {
-    min-height: calc(100vh - 240px);
-  }
-
-  .md-textarea {
-    min-height: calc(100vh - 240px);
-  }
-
-  .footer-row {
-    flex-direction: column;
-    gap: 8px;
+  
+  .md-input,
+  .preview-body {
+    min-height: 300px;
   }
 }
 </style>

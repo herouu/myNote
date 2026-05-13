@@ -232,6 +232,11 @@ const renderPreview = (content) => {
 </script>
 
 <style scoped>
+.note-list,
+.note-list * {
+  font-family: 'Yozai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 .note-list {
   display: flex;
   flex-direction: column;
